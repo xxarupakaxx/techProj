@@ -1,18 +1,19 @@
 package main
 
-func work() {
-	workers := 5
-	ch := make(chan *Task, workers)
-	defer close(ch)
-	for i := 0; i < workers; i++ {
-		go func() {
-			for task := range ch {
-				task.DoSomething()
-			}
-		}()
-	}
+import (
+	"log"
+	"os/user"
+	"path/filepath"
+)
 
-	for i := 0; i < 20; i++ {
-		ch <- &Task{}
+func main() {
+	u, err := user.Current()
+	if err != nil {
+		log.Fatal(err)
+	}
+	// "\"でパス文字列を統合しない
+	dir := filepath.Join(u.HomeDir, ".config", "myapp")
+	if err != nil {
+		log.Fatal(err)
 	}
 }
