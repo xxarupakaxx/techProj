@@ -2,7 +2,6 @@ package main
 
 import (
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -12,13 +11,23 @@ import (
 
 func upload(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-		_, header, err := r.FormFile("file")
-		s, _ := header.Open()
-		p := filepath.Join("files", header.Filename)
-		buf, _ := ioutil.ReadAll(s)
-		ioutil.WriteFile(p, buf, 0644)
-		http.Redirect(w, r, "/+path", 301)
-
+		stream, header, err := r.FormFile("file")
+		if err != nil {
+			http.Error(w, http.statusText(http.StatusInternalServerError),
+				http.StatusInternalServerError)
+			return
+		}
+		p := filepath.Join("files", filepath.Base(header.Filename))
+		println(p)
+		f, err := os.Create(p)
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError),
+				http.StatusInternalServerError)
+			return
+		}
+		defer f.Close()
+		io.Copy(f, stream)
+		http.Redirect(w, r, path.Join("/files", p), 301)
 	} else {
 		http.Redirect(w, r, "/", 301)
 	}
