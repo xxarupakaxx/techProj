@@ -2,12 +2,27 @@ package main
 
 import (
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 )
+
+func upload(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		_, header, err := r.FormFile("file")
+		s, _ := header.Open()
+		p := filepath.Join("files", header.Filename)
+		buf, _ := ioutil.ReadAll(s)
+		ioutil.WriteFile(p, buf, 0644)
+		http.Redirect(w, r, "/+path", 301)
+
+	} else {
+		http.Redirect(w, r, "/", 301)
+	}
+}
 
 func main() {
 	cwd, err := os.Getwd()
