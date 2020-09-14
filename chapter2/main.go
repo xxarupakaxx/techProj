@@ -3,18 +3,20 @@ package main
 import (
 	"log"
 	"os/exec"
+	"runtime"
 )
 
 func main() {
-	cmd := exec.Command("my-app")
-	b, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Fatal(err)
-	}
 
-	b, err = japanese.shiftJIS.NewDecoder().Bytes(b)
+	var cmd exec.Cmd
+	if runtime.GOOS == "windows" {
+		cmd = exec.Command("cmd", "/c", "myapp.bat")
+	} else {
+		cmd = exec.Command("/bin/sh", "-c", "myapp.sh")
+
+	}
+	err := cmd.Run()
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.print(string(b))
 }
