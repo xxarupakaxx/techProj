@@ -13,7 +13,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		stream, header, err := r.FormFile("file")
 		if err != nil {
-			http.Error(w, http.statusText(http.StatusInternalServerError),
+			http.Error(w, http.StatusText(http.StatusInternalServerError),
 				http.StatusInternalServerError)
 			return
 		}
