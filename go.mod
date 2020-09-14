@@ -1,4 +1,3 @@
-module hello
-module net/http
+module main
 
 go 1.15
